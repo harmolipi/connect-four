@@ -24,8 +24,7 @@ class ConnectFour
   end
 
   def intro_text
-    puts <<-intro
-
+    puts <<~intro
 Let's play Connect Four!
 
 Simply take turns entering the number of the column you'd like to drop a piece into.
@@ -54,7 +53,9 @@ vertically, or diagonally!
   end
 
   def drop_piece(column)
+    # binding.pry
     @board[column.to_i - 1] << @current_player
+    # puts 'hi'
   end
 
   def request_input
