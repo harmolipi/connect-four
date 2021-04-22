@@ -11,9 +11,29 @@ describe ConnectFour do
   let(:player_two) {  instance_double('player', to_s: " \u26AB".yellow) }
   subject(:my_game) { described_class.new(player_one, player_two) }
 
-
   describe '#drop_piece' do
 
+
+    context 'when Player 1 chooses column 2' do
+      it "adds Player 1's piece to the corresponding array" do
+        game_board = my_game.instance_variable_get(:@board)
+        expect { my_game.drop_piece('2') }.to change(game_board[1], :length).by(1)
+      end
+    end
+
+    context 'when Player 1 chooses column 6' do
+      it "adds Player 1's piece to the corresponding array" do
+        game_board = my_game.instance_variable_get(:@board)
+        expect { my_game.drop_piece('6') }.to change(game_board[5], :length).by(1)
+      end
+    end
+
+    context 'when Player 1 chooses column 2 again' do
+      it 'adds a second Player 1 piece  to the corresponding array' do
+        game_board = my_game.instance_variable_get(:@board)
+        expect { my_game.drop_piece('2') }.to change(game_board[1], :length).to(2)
+      end
+    end
   end
 
   describe '#valid_move?' do

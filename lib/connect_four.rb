@@ -14,13 +14,13 @@ class ConnectFour
     @player_one = player_one
     @player_two = player_two
     @current_player = @player_one
-    @board = Array.new(7, [@player_two, @player_one, @player_one])
+    @board = Array.new(7) { [] }
   end
 
   def play
     intro_text
     print_board
-    game_loop
+    # game_loop
   end
 
   def intro_text
@@ -53,8 +53,8 @@ vertically, or diagonally!
     puts '      1   2   3   4   5   6   7'.green
   end
 
-  def drop_piece
-
+  def drop_piece(column)
+    @board[column.to_i - 1] << @current_player
   end
 
   def request_input
