@@ -1,20 +1,14 @@
 # frozen_string_literal: true
 
 require_relative './player'
-require_relative './colors'
+# require_relative './colors'
 require 'pry'
 
-# Class handling Connect Four gameplay mechanisms
+# Class handling Connect Four gameplay mechanics
 class ConnectFour
-  PLAYER_ONE_COLOR = 'red'
-  PLAYER_TWO_COLOR = 'yellow'
-  EMPTY_CELL = "\u26AA"
-
-  def initialize(player_one = Player.new(1, PLAYER_ONE_COLOR), player_two = Player.new(2, PLAYER_TWO_COLOR))
-    @player_one = player_one
-    @player_two = player_two
-    @current_player = @player_one
-    @board = Array.new(7) { [] }
+  def initialize(board = Board.new)
+    @board = board
+    @current_player = @board.player_one
   end
 
   def play
@@ -40,27 +34,19 @@ vertically, or diagonally!
     end
   end
 
-  def print_board
-    5.downto(0) do |i|
-      print '    |'
-      @board.each do |column|
-        print column[i] || " #{EMPTY_CELL}"
-        print '|'
-      end
-      puts "\n"
-    end
-    puts '      1   2   3   4   5   6   7'.green
-  end
-
-  def drop_piece(column)
-    # binding.pry
-    @board[column.to_i - 1] << @current_player
-    # puts 'hi'
-  end
-
   def request_input
     print_board
     print 'Choose a column: '
+  end
+
+  def input_test
+    puts @board.to_s
+    print 'Choose a column: '
+    input = gets.chomp
+    @board.drop_piece(input)
+  rescue StandardError
+    puts 'Invalid input, please try again.'
+    retry
   end
 
   def player_input
@@ -75,10 +61,6 @@ vertically, or diagonally!
   def input_error
     puts 'That was an invalid move!'
     request_input
-  end
-
-  def valid_move?(move)
-    move =~ /^(?!0|8|9)\d$/ && @board[move.to_i].length < 6
   end
 
   def game_over?
