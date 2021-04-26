@@ -9,7 +9,7 @@ class Board
   PLAYER_TWO_COLOR = 'yellow'
   EMPTY_CELL = "\u26AA"
 
-  attr_reader :player_one, :player_two
+  # attr_reader :player_one, :player_two, :board_contents
 
   def initialize(player_one = Player.new(1, PLAYER_ONE_COLOR), player_two = Player.new(2, PLAYER_TWO_COLOR),
                  board_contents = Array.new(7) { [] })
