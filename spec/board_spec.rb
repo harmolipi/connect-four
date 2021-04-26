@@ -8,17 +8,12 @@ describe Board do
   let(:player_one) {  instance_double('player', to_s: " \u26AB".red) }
   let(:player_two) {  instance_double('player', to_s: " \u26AB".yellow) }
   subject(:empty_board) { described_class.new(player_one, player_two) }
-  # subject(:partially_filled_board) { described_class.new(player_one, player_two, partially_filled) }
 
   describe '#drop_piece' do
-    before do
-      full_column = [player_one, player_two, player_one, player_two, player_one, player_two, player_one, player_two]
-      half_column = [player_one, player_two, player_one, player_two]
-      partially_filled = [full_column, half_column, full_column, half_column, full_column, half_column]
-      allow(subject).to receive(:valid_move?).and_return(true)
-    end
-
     context 'valid_move? is true' do
+      before do
+        allow(subject).to receive(:valid_move?).and_return(true)
+      end
       context 'empty board' do
         context 'when Player 1 drops a piece in column 2' do
           it "column 2 includes only Player 1's piece" do
@@ -48,6 +43,18 @@ describe Board do
             expect { subject.drop_piece('a', player_one) }.to raise_error(StandardError)
           end
         end
+      end
+    end
+  end
+
+  describe '#valid_move?' do
+    context 'Player 1 drops a piece into column 2 (which is not full)' do
+      it 'returns true' do
+        full_column = [player_one, player_two, player_one, player_two, player_one, player_two, player_one, player_two]
+        half_column = [player_one, player_two, player_one, player_two]
+        partially_filled = [full_column, half_column, full_column, half_column, full_column, half_column]
+        subject(:partially_filled_board) { described_class.new(player_one, player_two, partially_filled) }
+        expect(subject).to be_valid_move('2')
       end
     end
   end
