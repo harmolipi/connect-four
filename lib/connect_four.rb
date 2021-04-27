@@ -30,6 +30,8 @@ class ConnectFour
     INTRO
   end
 
+  private
+
   def game_loop
     42.times do
       input

@@ -34,6 +34,8 @@ class Board
     valid_move?(column) ? @board_contents[column.to_i - 1] << player : raise { StandardError 'Invalid input' }
   end
 
+  private
+
   def valid_move?(column)
     column =~ /^(?!0|8|9)\d$/ && @board_contents[column.to_i - 1].length < 6
   end
