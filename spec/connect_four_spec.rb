@@ -4,110 +4,136 @@
 
 require_relative '../lib/connect_four'
 require_relative '../lib/player'
+require_relative '../lib/board'
 require_relative '../lib/colors'
 
 describe ConnectFour do
-  let(:player_one) {  instance_double('player', to_s: " \u26AB".red) }
-  let(:player_two) {  instance_double('player', to_s: " \u26AB".yellow) }
-  subject(:my_game) { described_class.new(player_one, player_two) }
+  let(:player_one) { instance_double('player', to_s: " \u26AB".red, player_number: 1) }
+  let(:player_two) { instance_double('player', to_s: " \u26AB".yellow, player_number: 2) }
+  let(:game_board) { instance_double('board', player_one: player_one, player_two: player_two) }
+  subject(:my_game) { described_class.new(game_board) }
 
-  describe '#drop_piece' do
-    context 'when Player 1 chooses column 2' do
-      it "adds Player 1's piece to the corresponding array" do
-        game_board = my_game.instance_variable_get(:@board)
-        my_game.drop_piece('2')
-        expect(game_board[1][0]).to eql(player_one)
-      end
-    end
-
-    context 'when Player 1 chooses column 2 twice' do
-      it 'adds two Player 1 pieces to the corresponding array' do
-        game_board = my_game.instance_variable_get(:@board)
-        my_game.drop_piece('2')
-        my_game.drop_piece('2')
-        expect(game_board[1]).to contain_exactly(player_one, player_one)
-      end
-    end
-
-    context 'when Player 1 chooses column 6' do
-      it "adds Player 1's piece to the corresponding array" do
-        game_board = my_game.instance_variable_get(:@board)
-        # expect { my_game.drop_piece('6') }.to change(game_board[5], :length).by(1)
-        my_game.drop_piece('6')
-        expect(game_board[5][0]).to eql(player_one)
-      end
-    end
-
-    context 'when Player 1 and Player 2 both choose column 5' do
-      it "Adds both Player 1's and Player 2's pieces to the corresponding array" do
-        game_board = my_game.instance_variable_get(:@board)
-        my_game.drop_piece('5')
-        my_game.instance_variable_set(:@current_player, player_two)
-        my_game.drop_piece('5')
-        expect(game_board[4]).to include(player_one, player_two)
-      end
-    end
-  end
-
-  describe '#valid_move?' do
-    context 'when player enters a letter' do
-      it 'returns false' do
-        input = 'a'
-        expect(my_game).not_to be_valid_move(input)
-      end
-    end
-
-    context 'when player enters an invalid number' do
-      it 'returns false' do
-        input = '8'
-        expect(my_game).not_to be_valid_move(input)
-      end
-    end
-
-    context 'when player enters a 2-digit number' do
-      it 'returns false' do
-        input = '22'
-        expect(my_game).not_to be_valid_move(input)
-      end
-    end
-
-    context 'when player picks a full column' do
-      it 'returns false' do
-        my_game.instance_variable_set(:@board, [[], [player_one, player_one, player_one, player_one, player_one, player_one], [], [], [], [], []])
-        input = '1'
-        expect(my_game).not_to be_valid_move(input)
-      end
-    end
-
-    context 'when player makes a valid move' do
-      it 'returns true' do
-        input = '2'
-        expect(my_game).to be_valid_move(input)
-      end
-    end
-  end
-
-  describe '#won?' do
-
+  describe '#game_over?' do
     context 'when no player has connected 4' do
       it 'returns false' do
-        expect(my_game).not_to be_won
+        allow(my_game).to receive(:horizontal_win?).and_return(false)
+        allow(my_game).to receive(:vertical_win?).and_return(false)
+        allow(my_game).to receive(:diagonal_forwards_win?).and_return(false)
+        allow(my_game).to receive(:diagonal_backwards_win?).and_return(false)
+        expect(my_game).not_to be_game_over
       end
     end
+  end
 
-    context 'when player connects 4 horizontally on the bottom row' do
+  describe '#horizontal_win?' do
+    context 'when player connects 4 from column 1, row 1' do
       it 'returns true' do
-        expect(my_game).to be_won
+        contents = [[player_one], [player_one], [player_one], [player_one], [], [], []]
+        allow(game_board).to receive(:board_contents).and_return(contents)
+        expect(subject).to be_horizontal_win
       end
     end
 
-    context 'when player connects 4 vertically on the second column' do
+    context 'when player connects 4 from column 2, row 1' do
       it 'returns true' do
-        expect(my_game).to be_won
+        contents = [[], [player_one], [player_one], [player_one], [player_one], [], []]
+        allow(game_board).to receive(:board_contents).and_return(contents)
+        expect(subject).to be_horizontal_win
       end
     end
 
-    context 'when player connects  4 diagonally from the bottom of column 1'
+    context 'when player connects 4 from column 3, row 1' do
+      it 'returns true' do
+        contents = [[], [], [player_one], [player_one], [player_one], [player_one], []]
+        allow(game_board).to receive(:board_contents).and_return(contents)
+        expect(subject).to be_horizontal_win
+      end
+    end
+
+    context 'when player connects 4 from column 4, row 1' do
+      it 'returns true' do
+        contents = [[], [], [], [player_one], [player_one], [player_one], [player_one]]
+        allow(game_board).to receive(:board_contents).and_return(contents)
+        expect(subject).to be_horizontal_win
+      end
+    end
+  end
+
+  describe '#vertical_win?' do
+    context 'when player connects 4 vertically from column 2, row 1' do
+      it 'returns true' do
+        contents = [[], [player_one, player_one, player_one, player_one], [], [], [], [], []]
+        allow(game_board).to receive(:board_contents).and_return(contents)
+        expect(my_game).to be_vertical_win
+      end
+    end
+
+    context 'when player connects 4 vertically from column 2, row 2' do
+      it 'returns true' do
+        contents = [[], [player_two, player_one, player_one, player_one, player_one], [], [], [], [], []]
+        allow(game_board).to receive(:board_contents).and_return(contents)
+        expect(my_game).to be_vertical_win
+      end
+    end
+
+    context 'when player connects 4 vertically from column 2, row 3' do
+      it 'returns true' do
+        contents = [[], [player_two, player_two, player_one, player_one, player_one, player_one], [], [], [], [], []]
+        allow(game_board).to receive(:board_contents).and_return(contents)
+        expect(my_game).to be_vertical_win
+      end
+    end
+  end
+
+  describe '#diagonal_forwards_win?' do
+    context 'when player connects 4 diagonally forwards column 1, row 1' do
+      it 'returns true' do
+        contents = [[player_one], [player_two, player_one], [player_one, player_two, player_one], [player_two, player_one, player_two, player_one], [], [], []]
+        allow(game_board).to receive(:board_contents).and_return(contents)
+        expect(my_game).to be_diagonal_forwards_win
+      end
+    end
+  end
+
+  describe '#diagonal_backwards_win?' do
+    context 'when player connects 4 diagonally backwards from column 7, row 1' do
+      it 'returns true' do
+        contents = [[], [], [], [player_two, player_one, player_two, player_one], [player_one, player_two, player_one], [player_two, player_one], [player_one]]
+        allow(game_board).to receive(:board_contents).and_return(contents)
+        expect(my_game).to be_diagonal_backwards_win
+      end
+    end
+  end
+
+  describe '#ending' do
+    before(:each) do
+      allow(game_board).to receive(:to_s)
+      allow(my_game).to receive(:puts)
+    end
+
+    context 'when there is no winner' do
+      it 'prints the tie message' do
+        my_game.instance_variable_set(:@winner, nil)
+        expect(my_game).to receive(:puts).with('Looks like it was a tie!')
+        my_game.ending
+      end
+    end
+
+    context 'when Player 1 is the winner' do
+      it 'congratulates Player 1' do
+        my_game.instance_variable_set(:@winner, player_one)
+        expect(my_game).to receive(:puts).with("Congrats Player 1, you win!\n\n")
+        my_game.ending
+      end
+    end
+
+    context 'when Player 2 is the winner' do
+      it 'congratulates Player 2' do
+        my_game.instance_variable_set(:@winner, player_two)
+        expect(my_game).to receive(:puts).with("Congrats Player 2, you win!\n\n")
+        my_game.ending
+      end
+    end
   end
 end
 

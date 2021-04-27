@@ -1,15 +1,14 @@
 # frozen_string_literal: true
 
 require_relative './player'
-require 'pry'
 
 # Game board for ConnectFour
 class Board
+  attr_reader :board_contents, :player_one, :player_two
+
   PLAYER_ONE_COLOR = 'red'
   PLAYER_TWO_COLOR = 'yellow'
   EMPTY_CELL = "\u26AA"
-
-  # attr_reader :player_one, :player_two, :board_contents
 
   def initialize(player_one = Player.new(1, PLAYER_ONE_COLOR), player_two = Player.new(2, PLAYER_TWO_COLOR),
                  board_contents = Array.new(7) { [] })
@@ -19,6 +18,7 @@ class Board
   end
 
   def to_s
+    puts "\n"
     5.downto(0) do |i|
       print '    |'
       @board_contents.each do |column|
@@ -35,6 +35,6 @@ class Board
   end
 
   def valid_move?(column)
-    column =~ /^(?!0|8|9)\d$/ && @board_contents[column.to_i].length < 6
+    column =~ /^(?!0|8|9)\d$/ && @board_contents[column.to_i - 1].length < 6
   end
 end
