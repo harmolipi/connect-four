@@ -13,6 +13,12 @@ It was definitely very different approaching this one through test-driven develo
 
 I'd like to continue practicing like this, because I definitely do see TDD as a good strategy to keep on using in the future - especially when tackling more complex projects.
 
+### Next steps
+
+I realized that by making some of my methods private, they're untestable. I won't do it now, but it looks like that means I should only test the public-facing methods, and let them access the private ones (rather than stubbing).
+
+Also, I'm sure there are much better ways to check for win conditions, since that feels like it's the most inelegant part of my code. Eventually I could come back and look for cleaner ways to do it.
+
 God bless.
 
 -Niko Birbilis
